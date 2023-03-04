@@ -8,6 +8,10 @@
     "compile": "tsc",
     "watch": "tsc -w"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/STL-FelipeGomes/curso-node-express"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^18.14.6",
