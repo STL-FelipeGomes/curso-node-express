@@ -39,15 +39,25 @@ class LivroController {
       });
   };
 
-  static atualizarLivro = async (
-    req: express.Request,
-    res: express.Response
-  ) => {
+  static atualizarLivro = (req: express.Request, res: express.Response) => {
     const idLivro: string = req.params.id;
     livros
       .findByIdAndUpdate(idLivro, { $set: req.body })
       .then(() => {
         res.status(200).send({ message: 'Livro atualizado com sucesso!' });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
+  };
+
+  static excluirLivro = (req: express.Request, res: express.Response) => {
+    const id = req.params.id;
+
+    livros
+      .findByIdAndDelete(id)
+      .then(() => {
+        res.status(200).send({ message: 'Livro excluído com sucesso!' });
       })
       .catch((err) => {
         res.status(500).send({ message: err.message });

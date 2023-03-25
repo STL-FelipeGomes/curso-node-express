@@ -12,21 +12,4 @@ app.use(express.json());
 
 routes(app);
 
-// app.put('/livros/:id', (req: express.Request, res: express.Response) => {
-//   const index = buscaLivro(req.params.id);
-//   livros[index].titulo = req.body.titulo;
-//   res.json(livros);
-// });
-
-// app.delete('/livros/:id', (req: express.Request, res: express.Response) => {
-//   const { id } = req.params;
-//   const index = buscaLivro(id);
-//   livros.splice(index, 1);
-//   res.send(`Livro ${id} removido com sucesso`);
-// });
-
-// function buscaLivro(id: string) {
-//   return livros.findIndex((livro) => livro.id === id);
-// }
-
 export default app;
