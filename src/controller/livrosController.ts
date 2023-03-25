@@ -10,6 +10,21 @@ class LivroController {
     res.status(200).json(query);
   };
 
+  static listarLivroPorId = (req: express.Request, res: express.Response) => {
+    const idLivro = req.params.id;
+    livros
+      .findById(idLivro)
+      .exec()
+      .then((livro) => {
+        res.status(200).send(livro);
+      })
+      .catch((err) => {
+        res
+          .status(400)
+          .send({ message: `${err.message} - livro não localizado` });
+      });
+  };
+
   static cadastrarLivro = (req: express.Request, res: express.Response) => {
     const livro = new livros(req.body);
     livro
