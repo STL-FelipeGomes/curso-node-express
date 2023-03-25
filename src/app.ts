@@ -12,16 +12,6 @@ app.use(express.json());
 
 routes(app);
 
-// app.get('/livros/:id', (req: express.Request, res: express.Response) => {
-//   const index: number = buscaLivro(req.params.id);
-//   res.json(livros[index]);
-// });
-
-// app.post('/livros', (req: express.Request, res: express.Response) => {
-//   livros.push(req.body);
-//   res.status(201).send('Livro cadastrado com sucesso');
-// });
-
 // app.put('/livros/:id', (req: express.Request, res: express.Response) => {
 //   const index = buscaLivro(req.params.id);
 //   livros[index].titulo = req.body.titulo;
