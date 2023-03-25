@@ -1,6 +1,6 @@
-import * as express from 'express';
+import express from 'express';
 import db from './config/dbConnect';
-import livros from './models/Livro';
+import routes from './routes/index';
 
 db.on('error', console.log.bind(console, 'Error de conexão'));
 db.once('open', () => {
@@ -10,14 +10,7 @@ db.once('open', () => {
 const app = express();
 app.use(express.json());
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.status(200).send('curso de Node');
-});
-
-app.get('/livros', async (req: express.Request, res: express.Response) => {
-  const query = await livros.find();
-  res.status(200).json(query);
-});
+routes(app);
 
 // app.get('/livros/:id', (req: express.Request, res: express.Response) => {
 //   const index: number = buscaLivro(req.params.id);
