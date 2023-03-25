@@ -1,4 +1,4 @@
-import express, { Express, Response } from 'express';
+import express from 'express';
 import livros from '../models/Livro';
 
 class LivroController {
@@ -10,23 +10,32 @@ class LivroController {
     res.status(200).json(query);
   };
 
-  static cadastrarLivro = async (
-    req: express.Request,
-    res: express.Response
-  ) => {
-    let livro = new livros(req.body);
-    console.log('\x1b[34m olha o livro \x1b[0m', livro);
+  static cadastrarLivro = (req: express.Request, res: express.Response) => {
+    const livro = new livros(req.body);
     livro
       .save()
-      .then((response) => {
-        console.log('\x1b[32m deu bom \x1b[0m', response);
+      .then(() => {
         res.status(201).send(livro.toJSON());
       })
       .catch((err) => {
-        console.log('\x1b[31m dedu ruim \x1b[0m', err);
         res
           .status(500)
-          .send({ message: `${err.message} - fala ao cadastrar um livro.` });
+          .send({ message: `${err.message} - falha ao cadastrar um livro.` });
+      });
+  };
+
+  static atualizarLivro = async (
+    req: express.Request,
+    res: express.Response
+  ) => {
+    const idLivro: string = req.params.id;
+    livros
+      .findByIdAndUpdate(idLivro, { $set: req.body })
+      .then(() => {
+        res.status(200).send({ message: 'Livro atualizado com sucesso!' });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
       });
   };
 }
