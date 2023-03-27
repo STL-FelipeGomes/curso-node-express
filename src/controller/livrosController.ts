@@ -6,7 +6,7 @@ class LivroController {
     req: express.Request,
     res: express.Response
   ) => {
-    const query = await livros.find();
+    const query = await livros.find().populate('autor');
     res.status(200).json(query);
   };
 
@@ -14,6 +14,7 @@ class LivroController {
     const idLivro = req.params.id;
     livros
       .findById(idLivro)
+      .populate('autor', 'nome')
       .exec()
       .then((livro) => {
         res.status(200).send(livro);
