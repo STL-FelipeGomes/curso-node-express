@@ -64,6 +64,22 @@ class LivroController {
         res.status(500).send({ message: err.message });
       });
   };
+
+  static listarLivroPorEditora = (
+    req: express.Request,
+    res: express.Response
+  ) => {
+    const editora = req.query.editora;
+    livros
+      .find({ editora: editora })
+      .then((response) => {
+        console.log(response);
+        res.status(200).json(response);
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
+  };
 }
 
 export default LivroController;
