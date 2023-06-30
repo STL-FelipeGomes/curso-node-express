@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/STL-FelipeGomes/curso-node-express"
+    "url": "https://github.com/felp-gomes/curso-node-express"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
