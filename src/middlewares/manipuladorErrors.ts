@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import ErroBase from '../erros/ErroBase';
+import RequisicaoIncorreta from '../erros/RequisicaoIncorreta';
+import ErrorValidacao from '../erros/ErroValidacao';
 
 function manipuladorErrors(
   error: Error,
@@ -8,18 +11,11 @@ function manipuladorErrors(
   next: NextFunction
 ) {
   if (error instanceof mongoose.Error.CastError) {
-    return res
-      .status(400)
-      .send({ message: 'Um ou mais dados fornecidos estão incorretos' });
+    return new RequisicaoIncorreta().enviarResposta(res);
   } else if (error instanceof mongoose.Error.ValidationError) {
-    const mensagensErro = Object.values(error.errors)
-      .map((err) => err.message)
-      .join('; ');
-    return res.status(400).send({
-      message: `Os seguintes erros foram encontrados: ${mensagensErro}`,
-    });
+    return new ErrorValidacao(error).enviarResposta(res);
   }
-  res.status(500).send({ message: 'Error interno do servidor' });
+  new ErroBase().enviarResposta(res);
 }
 
 export default manipuladorErrors;
