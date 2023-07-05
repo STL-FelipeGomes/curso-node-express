@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import autores from '../models/Autor';
+import NaoEncontrado from '../erros/Naoencontrado';
 
 class AutorController {
   static listarAutor = async (req: Request, res: Response) => {
@@ -19,7 +20,7 @@ class AutorController {
     try {
       const autor = await autores.findById(idAutor).exec();
       if (autor === null) {
-        return res.status(404).send({ message: 'Autor não localizado' });
+        next(new NaoEncontrado('Id do autor não encontrado'));
       }
       res.status(200).send(autor);
     } catch (error) {
