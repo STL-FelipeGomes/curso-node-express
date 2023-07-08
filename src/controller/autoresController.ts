@@ -19,8 +19,8 @@ class AutorController {
     const idAutor = req.params.id;
     try {
       const autor = await autores.findById(idAutor).exec();
-      if (autor === null) {
-        next(new NaoEncontrado('Id do autor não encontrado'));
+      if (!autor) {
+        return next(new NaoEncontrado('Id do autor não encontrado'));
       }
       res.status(200).send(autor);
     } catch (error) {
@@ -47,7 +47,12 @@ class AutorController {
   ) => {
     const idAutor: string = req.params.id;
     try {
-      await autores.findByIdAndUpdate(idAutor, { $set: req.body });
+      const updatedAutor = await autores.findByIdAndUpdate(idAutor, {
+        $set: req.body,
+      });
+      if (!updatedAutor) {
+        return next(new NaoEncontrado('Id do autor não encontrado'));
+      }
       res.status(200).send({ message: 'autor atualizado com sucesso!' });
     } catch (error) {
       next(error);
@@ -60,7 +65,10 @@ class AutorController {
   ) => {
     const id = req.params.id;
     try {
-      await autores.findByIdAndDelete(id);
+      const deleteAutor = await autores.findByIdAndDelete(id);
+      if (!deleteAutor) {
+        return next(new NaoEncontrado('Id do autor não encontrado'));
+      }
       res.status(200).send({ message: 'autor excluído com sucesso!' });
     } catch (error) {
       next(error);
