@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import livros from '../models/Livro';
+import { livros } from '../models/index';
 import NaoEncontrado from '../erros/Naoencontrado';
 
 class LivroController {

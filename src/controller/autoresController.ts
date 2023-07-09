@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import autores from '../models/Autor';
+import { autores } from '../models/index';
 import NaoEncontrado from '../erros/Naoencontrado';
 
 class AutorController {
