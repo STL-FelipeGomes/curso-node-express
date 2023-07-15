@@ -86,14 +86,28 @@ class LivroController {
     res: Response,
     next: NextFunction
   ) => {
-    const { editora, titulo } = req.query as {
+    const { editora, titulo, minPaginas, maxPaginas } = req.query as {
       editora: string;
       titulo: string;
+      minPaginas: string;
+      maxPaginas: string;
     };
     try {
-      const busca = {} as { editora: string; titulo: string };
-      if (editora) busca.editora = editora;
-      if (titulo) busca.titulo = titulo;
+      const busca = {} as {
+        editora: { $regex: string; $options: string };
+        titulo: { $regex: string; $options: string };
+        numeroPaginas: { $lte?: number; $gte?: number };
+      };
+      if (editora) busca.editora = { $regex: titulo, $options: 'i' };
+      if (titulo) busca.titulo = { $regex: titulo, $options: 'i' };
+      if (minPaginas) busca.numeroPaginas = { $gte: Number(minPaginas) };
+      if (maxPaginas) busca.numeroPaginas = { $lte: Number(maxPaginas) };
+      if (minPaginas && maxPaginas) {
+        busca.numeroPaginas = {
+          $gte: Number(minPaginas),
+          $lte: Number(maxPaginas),
+        };
+      }
       const livrosPorEditora = await livros.find(busca);
       if (!livrosPorEditora) {
         return next(new NaoEncontrado('Livro pela editora não encontrado'));
