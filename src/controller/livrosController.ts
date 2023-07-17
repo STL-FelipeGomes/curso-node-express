@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { autores, livros } from '../models/index';
 import NaoEncontrado from '../erros/Naoencontrado';
+import RequisicaoIncorreta from '../erros/RequisicaoIncorreta';
 
 async function processaBusca(
   {
@@ -50,7 +51,20 @@ class LivroController {
     next: NextFunction
   ) => {
     try {
-      const query = await livros.find().populate('autor');
+      let { limite = 5, pagina = 1 } = req.query;
+
+      limite = Number(limite);
+      pagina = Number(pagina);
+
+      if (limite < 0 && pagina < 0) {
+        return next(new RequisicaoIncorreta());
+      }
+
+      const query = await livros
+        .find()
+        .skip((Number(pagina) - 1) * Number(limite))
+        .limit(Number(limite))
+        .populate('autor');
       res.status(200).json(query);
     } catch (error) {
       next(error);
