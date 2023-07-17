@@ -51,10 +51,26 @@ class LivroController {
     next: NextFunction
   ) => {
     try {
-      let { limite = 5, pagina = 1 } = req.query;
+      let {
+        limite = 5,
+        pagina = 1,
+        ordenacao = '_id:-1',
+      } = req.query as {
+        limite: string | number | undefined;
+        pagina: string | number | undefined;
+        ordenacao: string | undefined;
+      };
+
+      let [campoOrdenacao, ordem] = ordenacao.split(':') as [
+        campoOrdenacao: string | undefined,
+        ordem: string | number | undefined
+      ];
 
       limite = Number(limite);
       pagina = Number(pagina);
+      ordem = Number(ordem);
+
+      campoOrdenacao = String(campoOrdenacao);
 
       if (limite < 0 && pagina < 0) {
         return next(new RequisicaoIncorreta());
@@ -62,6 +78,7 @@ class LivroController {
 
       const query = await livros
         .find()
+        .sort({ [campoOrdenacao]: ordem })
         .skip((Number(pagina) - 1) * Number(limite))
         .limit(Number(limite))
         .populate('autor');
