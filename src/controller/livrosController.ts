@@ -1,6 +1,47 @@
 import { Request, Response, NextFunction } from 'express';
-import { livros } from '../models/index';
+import { autores, livros } from '../models/index';
 import NaoEncontrado from '../erros/Naoencontrado';
+
+async function processaBusca(
+  {
+    editora,
+    titulo,
+    minPaginas,
+    maxPaginas,
+    nomeAutor,
+  }: {
+    editora: string;
+    titulo: string;
+    minPaginas: string;
+    maxPaginas: string;
+    nomeAutor: string;
+  },
+  next: NextFunction
+) {
+  const busca = {} as {
+    editora: { $regex: string; $options: string };
+    titulo: { $regex: string; $options: string };
+    numeroPaginas: { $lte?: number; $gte?: number };
+    autor: string | undefined;
+  };
+  if (editora) busca.editora = { $regex: titulo, $options: 'i' };
+  if (titulo) busca.titulo = { $regex: titulo, $options: 'i' };
+  if (minPaginas) busca.numeroPaginas.$gte = Number(minPaginas);
+  if (maxPaginas) busca.numeroPaginas.$lte = Number(maxPaginas);
+
+  if (nomeAutor) {
+    try {
+      const autor: { _id: string } | null = await autores.findOne({
+        nome: { $regex: nomeAutor, $options: 'i' },
+      });
+      busca.autor = autor?._id ?? undefined;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  return busca;
+}
 
 class LivroController {
   static listarLivros = async (
@@ -86,29 +127,26 @@ class LivroController {
     res: Response,
     next: NextFunction
   ) => {
-    const { editora, titulo, minPaginas, maxPaginas } = req.query as {
-      editora: string;
-      titulo: string;
-      minPaginas: string;
-      maxPaginas: string;
-    };
-    try {
-      const busca = {} as {
-        editora: { $regex: string; $options: string };
-        titulo: { $regex: string; $options: string };
-        numeroPaginas: { $lte?: number; $gte?: number };
+    const { editora, titulo, minPaginas, maxPaginas, nomeAutor } =
+      req.query as {
+        editora: string;
+        titulo: string;
+        minPaginas: string;
+        maxPaginas: string;
+        nomeAutor: string;
       };
-      if (editora) busca.editora = { $regex: titulo, $options: 'i' };
-      if (titulo) busca.titulo = { $regex: titulo, $options: 'i' };
-      if (minPaginas) busca.numeroPaginas = { $gte: Number(minPaginas) };
-      if (maxPaginas) busca.numeroPaginas = { $lte: Number(maxPaginas) };
-      if (minPaginas && maxPaginas) {
-        busca.numeroPaginas = {
-          $gte: Number(minPaginas),
-          $lte: Number(maxPaginas),
-        };
-      }
-      const livrosPorEditora = await livros.find(busca);
+    try {
+      const busca = await processaBusca(
+        {
+          editora,
+          titulo,
+          minPaginas,
+          maxPaginas,
+          nomeAutor,
+        },
+        next
+      );
+      const livrosPorEditora = await livros.find(busca).populate('autor');
       if (!livrosPorEditora) {
         return next(new NaoEncontrado('Livro pela editora não encontrado'));
       }
