@@ -5,8 +5,9 @@ import NaoEncontrado from '../erros/Naoencontrado';
 class AutorController {
   static listarAutor = async (req: Request, res: Response) => {
     try {
-      const autoresResultado = await autores.find();
-      res.status(200).json(autoresResultado);
+      const autoresResultado = autores.find();
+      req.resultado = autoresResultado;
+      next();
     } catch (error) {
       res.status(500).json({ message: 'Erro interno no servidor' });
     }

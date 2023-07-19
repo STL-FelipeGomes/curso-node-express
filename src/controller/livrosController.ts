@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { autores, livros } from '../models/index';
 import NaoEncontrado from '../erros/Naoencontrado';
-import RequisicaoIncorreta from '../erros/RequisicaoIncorreta';
 
 async function processaBusca(
   {
@@ -51,38 +50,9 @@ class LivroController {
     next: NextFunction
   ) => {
     try {
-      let {
-        limite = 5,
-        pagina = 1,
-        ordenacao = '_id:-1',
-      } = req.query as {
-        limite: string | number | undefined;
-        pagina: string | number | undefined;
-        ordenacao: string | undefined;
-      };
-
-      let [campoOrdenacao, ordem] = ordenacao.split(':') as [
-        campoOrdenacao: string | undefined,
-        ordem: string | number | undefined
-      ];
-
-      limite = Number(limite);
-      pagina = Number(pagina);
-      ordem = Number(ordem);
-
-      campoOrdenacao = String(campoOrdenacao);
-
-      if (limite < 0 && pagina < 0) {
-        return next(new RequisicaoIncorreta());
-      }
-
-      const query = await livros
-        .find()
-        .sort({ [campoOrdenacao]: ordem })
-        .skip((Number(pagina) - 1) * Number(limite))
-        .limit(Number(limite))
-        .populate('autor');
-      res.status(200).json(query);
+      const buscaLivros = livros.find();
+      req.resultado = buscaLivros;
+      next();
     } catch (error) {
       next(error);
     }
@@ -177,11 +147,12 @@ class LivroController {
         },
         next
       );
-      const livrosPorEditora = await livros.find(busca).populate('autor');
+      const livrosPorEditora = livros.find(busca).populate('autor');
       if (!livrosPorEditora) {
         return next(new NaoEncontrado('Livro pela editora não encontrado'));
       }
-      res.status(200).json(livrosPorEditora);
+      req.resultado = livrosPorEditora;
+      next();
     } catch (error) {
       next(error);
     }
