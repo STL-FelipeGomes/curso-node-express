@@ -1,15 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import ErroBase from '../erros/ErroBase';
 import RequisicaoIncorreta from '../erros/RequisicaoIncorreta';
 import ErrorValidacao from '../erros/ErroValidacao';
 
-function manipuladorErrors(
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+function manipuladorErrors(error: Error, req: Request, res: Response) {
   if (error instanceof mongoose.Error.CastError) {
     return new RequisicaoIncorreta().enviarResposta(res);
   } else if (error instanceof mongoose.Error.ValidationError) {

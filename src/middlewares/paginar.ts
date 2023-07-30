@@ -24,7 +24,8 @@ async function paginar(req: Request, res: Response, next: NextFunction) {
 
     campoOrdenacao = String(campoOrdenacao);
 
-    const resultado = req.resultado;
+    console.log('>>>>>>>>>>>', res.locals);
+    const resultado = res.locals.resultado;
 
     if (limite < 0 && pagina < 0) {
       return next(new RequisicaoIncorreta());

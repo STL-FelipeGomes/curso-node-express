@@ -51,7 +51,7 @@ class LivroController {
   ) => {
     try {
       const buscaLivros = livros.find();
-      req.resultado = buscaLivros;
+      res.locals.resultado = buscaLivros;
       next();
     } catch (error) {
       next(error);
@@ -151,7 +151,7 @@ class LivroController {
       if (!livrosPorEditora) {
         return next(new NaoEncontrado('Livro pela editora não encontrado'));
       }
-      req.resultado = livrosPorEditora;
+      res.locals.resultado = livrosPorEditora;
       next();
     } catch (error) {
       next(error);
