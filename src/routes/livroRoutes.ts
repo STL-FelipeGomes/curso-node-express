@@ -1,11 +1,12 @@
-import express from 'express';
+import { Router } from 'express';
 import LivroController from '../controller/livrosController';
+import paginar from '../middlewares/paginar';
 
-const router = express.Router();
+const router = Router();
 
 router
-  .get('/livros', LivroController.listarLivros)
-  .get('/livros/busca/', LivroController.listarLivroPorEditora)
+  .get('/livros', LivroController.listarLivros, paginar)
+  .get('/livros/busca', LivroController.listarLivroPorFiltro, paginar)
   .get('/livros/:id', LivroController.listarLivroPorId)
   .post('/livros', LivroController.cadastrarLivro)
   .put('/livros/:id', LivroController.atualizarLivro)
